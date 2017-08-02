@@ -1,0 +1,30 @@
+version:                        "3.1"
+
+services:
+    varnish:
+        image: "chathura86/swarm-manager"
+        networks:
+            - traefik
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - wp:/home/sites
+        deploy:
+            replicas:              1
+            placement:
+                constraints: [ node.role == manager ]
+            update_config:
+                parallelism:        2
+                delay:              10s
+            restart_policy:
+                condition:          on-failure
+            labels:
+                - "traefik.backend.loadbalancer.swarm=true"
+                - "traefik.port=80"
+                - "traefik.frontend.rule=Host:localhost"
+                - "traefik.docker.network=traefik"
+
+volumes:
+    sites:
+        driver:                   "cloudstor:aws"
+        driver_opts:
+            backing: shared
