@@ -7,7 +7,7 @@ services:
             - traefik
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - wp:/home/sites
+            - sites:/home/sites
         deploy:
             replicas:              1
             placement:
@@ -20,7 +20,7 @@ services:
             labels:
                 - "traefik.backend.loadbalancer.swarm=true"
                 - "traefik.port=80"
-                - "traefik.frontend.rule=Host:localhost"
+                - "traefik.frontend.rule=Host:mammatus.brinkdev.com"
                 - "traefik.docker.network=traefik"
 
 volumes:
@@ -28,3 +28,7 @@ volumes:
         driver:                   "cloudstor:aws"
         driver_opts:
             backing: shared
+
+networks:
+    traefik:
+        external: true
