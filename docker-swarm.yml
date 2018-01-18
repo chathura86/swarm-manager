@@ -1,34 +1,36 @@
-version:                        "3.1"
+    version:                        "3.1"
 
-services:
-    varnish:
-        image: "chathura86/swarm-manager"
-        networks:
-            - traefik
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - sites:/home/sites
-        deploy:
-            replicas:              1
-            placement:
-                constraints: [ node.role == manager ]
-            update_config:
-                parallelism:        2
-                delay:              10s
-            restart_policy:
-                condition:          on-failure
-            labels:
-                - "traefik.backend.loadbalancer.swarm=true"
-                - "traefik.port=80"
-                - "traefik.frontend.rule=Host:mammatus.brinkdev.com"
-                - "traefik.docker.network=traefik"
+    services:
+        dm:
+            image: "chathura86/swarm-manager:latest"
+            networks:
+                - traefik
+            volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+                - jenkins:/var/jenkins_home
+            environment:
+                - R_ENV="dev"
+            deploy:
+                replicas:              1
+                placement:
+                    constraints: [ node.role == manager ]
+                update_config:
+                    parallelism:        2
+                    delay:              10s
+                restart_policy:
+                    condition:          on-failure
+                labels:
+                    - "traefik.backend.loadbalancer.swarm=true"
+                    - "traefik.port=8080"
+                    - "traefik.frontend.rule=Host:mammatus.brinkdev.com"
+                    - "traefik.docker.network=traefik"
 
-volumes:
-    sites:
-        driver:                   "cloudstor:aws"
-        driver_opts:
-            backing: shared
+    volumes:
+        jenkins:
+            driver:                   "cloudstor:aws"
+            driver_opts:
+                backing: shared
 
-networks:
-    traefik:
-        external: true
+    networks:
+        traefik:
+            external: true
