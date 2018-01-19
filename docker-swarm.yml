@@ -2,7 +2,7 @@
 
     services:
         dm:
-            image: "chathura86/swarm-manager:latest"
+            image: "jenkins/jenkins:lts"
             networks:
                 - traefik
             volumes:
